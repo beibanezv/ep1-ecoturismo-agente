@@ -81,7 +81,7 @@ ep1-ecoturismo-agente/
 - [x] Fase 0 — Scaffold: uv, pyproject, .env.example, verify_groq.py, git init
 - [x] Fase 1 — Datos simulados (8-10 paquetes + 4-5 guías) + ingesta + índice Chroma
 - [x] Fase 2 — llm_client.py + prompts + respuesta base con citas
-- [ ] Fase 3 — Tools clima/senderos + loop razonamiento-acción + trace.jsonl
+- [x] Fase 3 — Tools clima/senderos + loop razonamiento-acción + trace.jsonl
 - [ ] Fase 4 — Replanificación automática
 - [ ] Fase 5 — Evals: 12-15 casos, tests/eval_agent.py, meta ≥85% aciertos
 - [ ] Fase 6 — README completo + diagrama Mermaid + docs/informe
@@ -104,3 +104,10 @@ ep1-ecoturismo-agente/
   (regla de citas [F#] + negativa honesta), `agent/retriever.py`,
   `agent/agent.py`. Flujo probado end-to-end con ClienteFalso. Decisión D9:
   demo será CLI + notebook (Streamlit descartado, ver tabla).
+- **2026-09-04** — Fase 3 completada: `agent/trace.py` (JSONL por paso),
+  `tools/trail_status.py` (fuente simulada), `tools/weather.py` (Open-Meteo
+  real; fuera de rango devuelve disponible=False sin inventar; umbrales de
+  conflicto: lluvia ≥10 mm, viento ≥50 km/h, mínima ≤-2 °C),
+  `agent/reasoning_loop.py` (detecta e informa conflictos, no replanifica),
+  citas extendidas a [T#] para herramientas. `tests/test_fase3.py`: 5/5 OK.
+  Open-Meteo verificado en vivo (Magallanes 2026-09-06).

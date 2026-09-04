@@ -61,14 +61,14 @@ class ClienteGroq(ClienteLLM):
 
 
 class ClienteFalso(ClienteLLM):
-    """Determinista: cita los fragmentos [F#] presentes en el prompt. Sin red, sin cuota."""
+    """Determinista: cita los fragmentos [F#] y herramientas [T#] del prompt. Sin red, sin cuota."""
 
     def __init__(self, modelo: str = "cliente-falso"):
         self.modelo = modelo
 
     def completar(self, sistema: str, usuario: str) -> RespuestaLLM:
-        marcadores = re.findall(r"\[F\d+\]", usuario)
-        unicos = sorted(set(marcadores), key=lambda m: int(m[2:-1]))
+        marcadores = re.findall(r"\[(?:F|T)\d+\]", usuario)
+        unicos = sorted(set(marcadores), key=lambda m: (m[1], int(m[2:-1])))
         if unicos:
             texto = (
                 "(respuesta simulada) Itinerario propuesto a partir del contexto recuperado: "
