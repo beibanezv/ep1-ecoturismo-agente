@@ -17,19 +17,21 @@ def planificar_en_tmp(tmp_path, consulta, fecha=None, clima=None):
 def test_detecta_sendero_cerrado(tmp_path):
     # PAQ-002 usa senda-base-torres (cerrada en trail_status.json). Dic 2026 esta
     # fuera del rango de Open-Meteo -> clima sin datos, no debe marcar conflicto.
+    # Fase 4: con conflicto el agente replanifica; el paquete final puede ser una
+    # alternativa, por eso no se exige paquete_id == PAQ-002.
     r = planificar_en_tmp(tmp_path, "trekking exigente en Torres del Paine", fecha="2026-12-15")
-    assert r.paquete_id == "PAQ-002"
     assert r.conflicto is True
     assert "senda-base-torres" in r.detalle_conflicto
     assert "trail_status.json (simulada)" in r.fuentes_citadas
 
 
 def test_sin_conflicto_en_chiloe(tmp_path):
-    # PAQ-001 solo usa senda-costa-lemuy (abierta).
-    r = planificar_en_tmp(tmp_path, "kayak suave para principiantes en Chiloe", fecha="2026-12-05")
+    # PAQ-001 solo usa senda-costa-lemuy (abierta). 2026-12-08: GUI-001 disponible.
+    r = planificar_en_tmp(tmp_path, "kayak suave para principiantes en Chiloe", fecha="2026-12-08")
     assert r.paquete_id == "PAQ-001"
     assert r.conflicto is False
     assert r.detalle_conflicto == "sin conflictos"
+    assert r.replanificado is False
 
 
 def test_conflicto_climatico_con_stub(tmp_path):
@@ -40,8 +42,11 @@ def test_conflicto_climatico_con_stub(tmp_path):
             "viento_max_kmh": 70.0, "codigo_clima": 80, "fuente": "stub-clima",
         }
 
+    # 2026-12-08: GUI-001 disponible. Clima adverso global -> replan fallida
+    # (ninguna region escapa al clima adverso) y el agente responde con
+    # honestidad informativa, manteniendo el conflicto y las fuentes.
     r = planificar_en_tmp(
-        tmp_path, "kayak suave para principiantes en Chiloe", fecha="2026-12-05", clima=clima_adverso
+        tmp_path, "kayak suave para principiantes en Chiloe", fecha="2026-12-08", clima=clima_adverso
     )
     assert r.conflicto is True
     assert "precipitacion 25.0 mm" in r.detalle_conflicto

@@ -12,6 +12,11 @@ Reglas:
 6. Si hay RESULTADOS DE HERRAMIENTAS EXTERNAS ([T1], [T2], etc.), usalos para validar la recomendacion: informa conflictos de sendero o clima citando la fuente, pero no cambies de paquete por tu cuenta.
 """
 
+SISTEMA_REPLAN = """\
+7. Si el contexto indica REPLANIFICACION AUTOMATICA, el agente ya valido la alternativa: presentala como recomendacion final.
+8. Explica en una o dos frases por que se descarto el paquete original (conflicto detectado) y cita el paquete alternativo con [F#] y las verificaciones con [T#].
+"""
+
 PLANTILLA_USUARIO = """\
 CONTEXTO RECUPERADO:
 {bloque_contexto}

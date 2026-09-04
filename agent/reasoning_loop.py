@@ -1,6 +1,9 @@
-"""Loop razonamiento-accion (D8): recuperar -> verificar senderos -> verificar clima -> responder.
+"""Loop razonamiento-accion (D8): recuperar -> verificar senderos/guia/clima ->
+replanificar si hay conflicto -> responder.
 
-Fase 3: detecta e informa conflictos, sin replanificar (la replanificacion automatica es Fase 4).
+Fase 4: ante conflicto, el Replanificador busca una alternativa viable
+(senderos, guia, clima, temporada); si la encuentra, responde recomendando
+el cambio con SISTEMA_REPLAN; si no, responde con honestidad informativa.
 Cada paso queda registrado via Trazador en logs/trace.jsonl.
 """
 import json
@@ -9,9 +12,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agent.llm_client import ClienteGroq, ClienteLLM
-from agent.prompts import SISTEMA_BASE, armar_usuario
+from agent.prompts import SISTEMA_BASE, SISTEMA_REPLAN, armar_usuario
 from agent.retriever import Fragmento, Recuperador
 from agent.trace import Trazador
+from tools.guia_disponibilidad import NOMBRE_FUENTE as FUENTE_GUIAS
+from tools.guia_disponibilidad import consultar_guia, describir_disponibilidad
+from tools.replanner import MESES, Replanificador
 from tools.trail_status import NOMBRE_FUENTE as FUENTE_SENDEROS
 from tools.trail_status import describir_estado, estado_sendero
 from tools.weather import NOMBRE_FUENTE as FUENTE_CLIMA
@@ -30,6 +36,8 @@ class PlanRespuesta:
     detalle_conflicto: str
     fuentes_citadas: list[str] = field(default_factory=list)
     archivo_trace: str = ""
+    replanificado: bool = False
+    paquete_original_id: str | None = None
 
 
 class AgentePlanificador:
@@ -51,6 +59,55 @@ class AgentePlanificador:
         if not archivos:
             return None
         return json.loads(archivos[0].read_text(encoding="utf-8"))
+
+    def _verificar_guia(self, paquete: dict, fecha: str, herramientas: list, conflictos: list) -> None:
+        r = consultar_guia(paquete["guia_asignado"], fecha)
+        self.trazador.registrar(
+            "herramienta", herramienta="consultar_guia",
+            entrada=paquete["guia_asignado"], salida=r["disponible"],
+        )
+        herramientas.append((FUENTE_GUIAS, describir_disponibilidad(r)))
+        if not r["disponible"]:
+            conflictos.append(f"guia no disponible: {r.get('motivo')}")
+
+    def _extraer_fuentes(self, respuesta: str, fragmentos: list[Fragmento], herramientas: list) -> list[str]:
+        fuentes: list[str] = []
+        for letra, numero in REGEX_CITAS.findall(respuesta):
+            n = int(numero)
+            if letra == "F" and 1 <= n <= len(fragmentos):
+                fuente = fragmentos[n - 1].fuente
+            elif letra == "T" and 1 <= n <= len(herramientas):
+                fuente = herramientas[n - 1][0]
+            else:
+                continue
+            if fuente not in fuentes:
+                fuentes.append(fuente)
+        return fuentes
+
+    def _responder(self, sistema: str, consulta: str, fecha: str | None, fragmentos: list[Fragmento], herramientas: list, detalle: str, paquete_id: str | None, paquete_original_id: str | None, replanificado: bool) -> PlanRespuesta:
+        pedido = consulta + (f" Fecha del viaje: {fecha}." if fecha else "")
+        usuario = armar_usuario(pedido, fragmentos, herramientas or None)
+        respuesta = self.llm.completar(sistema, usuario)
+        fuentes = self._extraer_fuentes(respuesta.texto, fragmentos, herramientas)
+        self.trazador.registrar(
+            "respuesta_final",
+            paquete_id=paquete_id,
+            replanificado=replanificado,
+            conflicto=bool(detalle and detalle != "sin conflictos"),
+            detalle_conflicto=detalle,
+            fuentes_citadas=fuentes,
+            modelo=respuesta.modelo,
+        )
+        return PlanRespuesta(
+            texto=respuesta.texto,
+            paquete_id=paquete_id,
+            conflicto=bool(detalle and detalle != "sin conflictos"),
+            detalle_conflicto=detalle,
+            fuentes_citadas=fuentes,
+            archivo_trace=str(self.trazador.archivo),
+            replanificado=replanificado,
+            paquete_original_id=paquete_original_id,
+        )
 
     def planificar(self, consulta: str, fecha: str | None = None) -> PlanRespuesta:
         self.trazador.registrar("consulta", texto=consulta, fecha=fecha)
@@ -87,6 +144,10 @@ class AgentePlanificador:
                     conflictos.append(f"sendero cerrado: {sid} ({est['motivo']})")
 
         if paquete and fecha:
+            mes = MESES[int(fecha[5:7]) - 1]
+            if mes not in paquete["temporada"]:
+                conflictos.append(f"fuera de temporada: {mes} no esta en {', '.join(paquete['temporada'])}")
+
             clima = self.proveedor_clima(paquete["region"], fecha)
             self.trazador.registrar(
                 "herramienta",
@@ -99,26 +160,70 @@ class AgentePlanificador:
             if hay_conflicto:
                 conflictos.append(f"clima adverso en {paquete['region']}: {motivo}")
 
+            self._verificar_guia(paquete, fecha, herramientas, conflictos)
+
         detalle = "sin conflictos" if not conflictos else " | ".join(conflictos)
-        pedido = consulta + (f" Fecha del viaje: {fecha}." if fecha else "")
-        usuario = armar_usuario(pedido, fragmentos, herramientas or None)
-        respuesta = self.llm.completar(SISTEMA_BASE, usuario)
 
-        fuentes: list[str] = []
-        for letra, numero in REGEX_CITAS.findall(respuesta.texto):
-            n = int(numero)
-            if letra == "F" and 1 <= n <= len(fragmentos):
-                fuente = fragmentos[n - 1].fuente
-            elif letra == "T" and 1 <= n <= len(herramientas):
-                fuente = herramientas[n - 1][0]
-            else:
-                continue
-            if fuente not in fuentes:
-                fuentes.append(fuente)
+        if conflictos and paquete_id:
+            replan = Replanificador(
+                recuperador=self.recuperador,
+                trazador=self.trazador,
+                proveedor_clima=self.proveedor_clima,
+                cargar_paquete=self._cargar_paquete,
+            )
+            resultado = replan.buscar_alternativa(
+                consulta=consulta,
+                fecha=fecha,
+                paquete_conflictado_id=paquete_id,
+                motivo_conflicto=detalle,
+                fragmentos_previos=fragmentos,
+            )
+            if resultado.viable:
+                ctx_fragmentos = [resultado.fragmento]
+                ctx_herramientas = resultado.herramientas
+                self.trazador.registrar(
+                    "seleccion_final",
+                    paquete_id=resultado.paquete["id"],
+                    conflictos_resueltos=detalle,
+                )
+                return self._responder(
+                    sistema=SISTEMA_BASE + SISTEMA_REPLAN,
+                    consulta=consulta,
+                    fecha=fecha,
+                    fragmentos=ctx_fragmentos,
+                    herramientas=ctx_herramientas,
+                    detalle=detalle,
+                    paquete_id=resultado.paquete["id"],
+                    paquete_original_id=paquete_id,
+                    replanificado=True,
+                )
+            self.trazador.registrar(
+                "seleccion_final",
+                paquete_id=None,
+                conflicto_irresoluble=detalle,
+            )
+            return self._responder(
+                sistema=SISTEMA_BASE,
+                consulta=consulta,
+                fecha=fecha,
+                fragmentos=[f for f in fragmentos if f.fuente == paquete_id] or fragmentos[:1],
+                herramientas=herramientas,
+                detalle=detalle,
+                paquete_id=None,
+                paquete_original_id=paquete_id,
+                replanificado=False,
+            )
 
+        pedido_herramientas = herramientas
+        usuario = consulta
+        pedido = usuario + (f" Fecha del viaje: {fecha}." if fecha else "")
+        usr = armar_usuario(pedido, fragmentos, pedido_herramientas or None)
+        respuesta = self.llm.completar(SISTEMA_BASE, usr)
+        fuentes = self._extraer_fuentes(respuesta.texto, fragmentos, herramientas)
         self.trazador.registrar(
             "respuesta_final",
             paquete_id=paquete_id,
+            replanificado=False,
             conflicto=bool(conflictos),
             detalle_conflicto=detalle,
             fuentes_citadas=fuentes,
@@ -131,4 +236,5 @@ class AgentePlanificador:
             detalle_conflicto=detalle,
             fuentes_citadas=fuentes,
             archivo_trace=str(self.trazador.archivo),
+            replanificado=False,
         )
