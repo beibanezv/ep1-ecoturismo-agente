@@ -1,5 +1,5 @@
 [project]
-name = "ep1-ecoturismo-replanner"
+name = "ep1-ecoturismo-agente"
 version = "0.1.0"
 description = "EP1 ISY0101 - Agente RAG que genera y replanifica itinerarios de ecoturismo ante clima y estado de senderos"
 readme = "README.md"

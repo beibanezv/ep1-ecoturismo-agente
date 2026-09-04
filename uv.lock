@@ -594,7 +594,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ep1-ecoturismo-replanner"
+name = "ep1-ecoturismo-agente"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

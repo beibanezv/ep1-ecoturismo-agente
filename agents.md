@@ -1,6 +1,6 @@
 # agents.md — Memoria de decisiones y avance del semestre
 
-**Proyecto:** ep1-ecoturismo-replanner
+**Proyecto:** ep1-ecoturismo-agente
 **Curso:** ISY0101 Ingeniería de Soluciones con IA — Evaluación Parcial 1 (30%)
 **GitHub:** https://github.com/beibanezv
 **Última actualización:** 2026-09-03
@@ -14,7 +14,7 @@
 - EP1 = 1 caso organizacional + informe de 5 páginas APA (IE1–IE9, pauta en
   `../EP1_ISY0101_Estudiante.pdf`). Se desarrolla en parejas, 5 semanas.
 - Estrategia del equipo: construir DOS prototipos con arquitectura base común
-  (este y `../ep1-veterinaria-dosis-seguras`), elegir el mejor como entregable
+  (este y `../ep1-veterinaria-agente`), elegir el mejor como entregable
   único; el otro se descarta o se menciona en la presentación explicando por
   qué se eligió uno sobre el otro.
 - Regla del stack: **≥50% con tecnologías vistas en clase es concepto guía,
@@ -31,7 +31,7 @@
 | D4 | Chunking | `RecursiveCharacterTextSplitter`-style 500/50 | Visto en RA1/IL1.3 (`2-text-chunking.py`); paquetes son documentos cortos | Sin chunking |
 | D5 | Gestor de deps | uv + Python 3.13 | Convención del curso (uv.lock en repo materiales) | pip |
 | D6 | Repos | Dos repos independientes | Superficie común ~100 líneas (`llm_client` + logger); entrega académica es por repo | Paquete `shared/`, monorepo |
-| D7 | Nombres | `ep1-ecoturismo-replanner` | Distintivo en GitHub beibanezv (decenas de archivos similares); describe la función (replanificador) | `EP1-Turismo` |
+| D7 | Nombres | `ep1-ecoturismo-agente` | Distintivo en GitHub beibanezv (decenas de archivos similares); describe la función (replanificador) | `EP1-Turismo` |
 | D8 | Orquestación | Loop razonamiento-acción propio (sin LangGraph/CrewAI) | Control total del logging de trazabilidad (requisito del encargo); la pauta pide mostrar el loop explícito | LangGraph (visto en curso; capa extra innecesaria para 1 agente) |
 | D9 | Interfaz demo | CLI (`main.py`) + notebook `notebooks/demo.ipynb` | La pauta no exige UI; Streamlit solo aparece en RA1 como app de demostración de las IL (IL1.3/IL1.4), no como requisito. Menos trabajo y menos cuota | Mini-UI Streamlit (estilo proyecto Oxford) |
 
@@ -52,7 +52,7 @@ tipo de actividad, nivel de experiencia):
 ## 4. Estructura
 
 ```
-ep1-ecoturismo-replanner/
+ep1-ecoturismo-agente/
 ├── data/
 │   ├── internal/paquetes/     (8-10 itinerarios .json)
 │   ├── internal/guias_roster.json (4-5 guías con disponibilidad)
