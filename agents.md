@@ -33,6 +33,7 @@
 | D6 | Repos | Dos repos independientes | Superficie común ~100 líneas (`llm_client` + logger); entrega académica es por repo | Paquete `shared/`, monorepo |
 | D7 | Nombres | `ep1-ecoturismo-replanner` | Distintivo en GitHub beibanezv (decenas de archivos similares); describe la función (replanificador) | `EP1-Turismo` |
 | D8 | Orquestación | Loop razonamiento-acción propio (sin LangGraph/CrewAI) | Control total del logging de trazabilidad (requisito del encargo); la pauta pide mostrar el loop explícito | LangGraph (visto en curso; capa extra innecesaria para 1 agente) |
+| D9 | Interfaz demo | CLI (`main.py`) + notebook `notebooks/demo.ipynb` | La pauta no exige UI; Streamlit solo aparece en RA1 como app de demostración de las IL (IL1.3/IL1.4), no como requisito. Menos trabajo y menos cuota | Mini-UI Streamlit (estilo proyecto Oxford) |
 
 ## 3. Requisitos funcionales (encargo)
 
@@ -77,7 +78,7 @@ ep1-ecoturismo-replanner/
 
 - [x] Fase 0 — Scaffold: uv, pyproject, .env.example, verify_groq.py, git init
 - [x] Fase 1 — Datos simulados (8-10 paquetes + 4-5 guías) + ingesta + índice Chroma
-- [ ] Fase 2 — llm_client.py + prompts + respuesta base con citas
+- [x] Fase 2 — llm_client.py + prompts + respuesta base con citas
 - [ ] Fase 3 — Tools clima/senderos + loop razonamiento-acción + trace.jsonl
 - [ ] Fase 4 — Replanificación automática
 - [ ] Fase 5 — Evals: 12-15 casos, tests/eval_agent.py, meta ≥85% aciertos
@@ -94,3 +95,10 @@ ep1-ecoturismo-replanner/
 - **2026-09-03** — Plan aprobado por el equipo (estructura, fases, stack).
   ChromaDB elegido sobre FAISS (D3) tras relajar la regla del 50% a concepto
   guía. Scaffold completado (Fase 0).
+- **2026-09-03** — Fase 1 completada: 9 paquetes + 5 guías + 14 senderos,
+  índice Chroma con 24 docs, 5/5 verificaciones semánticas OK.
+- **2026-09-03** — Fase 2 completada: `agent/llm_client.py` (ClienteGroq +
+  ClienteFalso determinista para dev/tests sin cuota), `agent/prompts.py`
+  (regla de citas [F#] + negativa honesta), `agent/retriever.py`,
+  `agent/agent.py`. Flujo probado end-to-end con ClienteFalso. Decisión D9:
+  demo será CLI + notebook (Streamlit descartado, ver tabla).
