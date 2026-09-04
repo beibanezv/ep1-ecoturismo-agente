@@ -1,0 +1,157 @@
+{
+  "meta": 0.85,
+  "casos": [
+    {
+      "id": "E01",
+      "consulta": "kayak suave para principiantes en Chiloe",
+      "fecha": "2026-12-08",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-001",
+        "conflicto": false,
+        "replanificado": false,
+        "paquete_original_id": null
+      }
+    },
+    {
+      "id": "E02",
+      "consulta": "ciclismo de travesia por la Araucania",
+      "fecha": "2026-12-08",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-004",
+        "conflicto": false,
+        "replanificado": false,
+        "paquete_original_id": null
+      }
+    },
+    {
+      "id": "E03",
+      "consulta": "ciclismo de montana para iniciarse cerca de Pucon",
+      "fecha": "2026-12-08",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-009",
+        "conflicto": false,
+        "replanificado": false,
+        "paquete_original_id": null
+      }
+    },
+    {
+      "id": "E04",
+      "consulta": "trekking exigente en Torres del Paine",
+      "fecha": "2026-12-08",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-009",
+        "conflicto": true,
+        "replanificado": true,
+        "paquete_original_id": "PAQ-002",
+        "detalle_conflicto_contiene": "senda-base-torres"
+      }
+    },
+    {
+      "id": "E05",
+      "consulta": "kayak suave para principiantes en Chiloe",
+      "fecha": "2026-12-08",
+      "clima": "adverso_los_lagos",
+      "esperado": {
+        "paquete_id": "PAQ-004",
+        "conflicto": true,
+        "replanificado": true,
+        "paquete_original_id": "PAQ-001"
+      }
+    },
+    {
+      "id": "E06",
+      "consulta": "observacion de ballenas en el corcovado con guia biologo",
+      "fecha": "2027-01-09",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-003",
+        "conflicto": true,
+        "replanificado": true,
+        "paquete_original_id": "PAQ-005",
+        "detalle_conflicto_contiene": "guia no disponible"
+      }
+    },
+    {
+      "id": "E07",
+      "consulta": "observacion de ballenas y fauna marina en Los Lagos",
+      "fecha": "2026-12-05",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-003",
+        "conflicto": true,
+        "replanificado": true,
+        "paquete_original_id": "PAQ-005",
+        "detalle_conflicto_contiene": "fuera de temporada"
+      }
+    },
+    {
+      "id": "E08",
+      "consulta": "kayak avanzado entre fiordos y glaciar",
+      "fecha": "2027-01-11",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": null,
+        "conflicto": true,
+        "replanificado": false,
+        "paquete_original_id": "PAQ-001"
+      }
+    },
+    {
+      "id": "E09",
+      "consulta": "kayak avanzado entre fiordos y glaciar",
+      "fecha": "2026-10-06",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-001",
+        "conflicto": false,
+        "replanificado": false,
+        "paquete_original_id": null
+      }
+    },
+    {
+      "id": "E10",
+      "consulta": "trekking exigente en Torres del Paine",
+      "fecha": "2026-12-04",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": null,
+        "conflicto": true,
+        "replanificado": false,
+        "paquete_original_id": "PAQ-002"
+      }
+    },
+    {
+      "id": "E11",
+      "consulta": "pinguinos y fauna en Punihuil",
+      "fecha": "2026-12-05",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-003",
+        "conflicto": false,
+        "replanificado": false,
+        "paquete_original_id": null,
+        "citas_contiene": [
+          "PAQ-003",
+          "trail_status.json (simulada)",
+          "guias_roster.json (interno)"
+        ]
+      }
+    },
+    {
+      "id": "E12",
+      "consulta": "observacion de ballenas en el corcovado",
+      "fecha": "2027-03-09",
+      "clima": "bueno",
+      "esperado": {
+        "paquete_id": "PAQ-005",
+        "conflicto": false,
+        "replanificado": false,
+        "paquete_original_id": null
+      }
+    }
+  ]
+}
