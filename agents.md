@@ -35,6 +35,8 @@
 | D8 | Orquestación | Loop razonamiento-acción propio (sin LangGraph/CrewAI) | Control total del logging de trazabilidad (requisito del encargo); la pauta pide mostrar el loop explícito | LangGraph (visto en curso; capa extra innecesaria para 1 agente) |
 | D9 | Interfaz demo | CLI (`main.py`) + notebook `notebooks/demo.ipynb` | La pauta no exige UI; Streamlit solo aparece en RA1 como app de demostración de las IL (IL1.3/IL1.4), no como requisito. Menos trabajo y menos cuota | Mini-UI Streamlit (estilo proyecto Oxford) |
 
+Convencion de commits: mensajes simples y en espanol durante todo el semestre.
+
 ## 3. Requisitos funcionales (encargo)
 
 Agencia boutique de ecoturismo en el sur de Chile arma itinerarios
