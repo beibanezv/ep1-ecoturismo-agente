@@ -1,0 +1,19 @@
+{
+  "id": "PAQ-008",
+  "nombre": "Trekking Villarrica Traverse",
+  "region": "Araucanía",
+  "tipo_actividad": "trekking",
+  "dificultad": "avanzado",
+  "dias": 4,
+  "temporada": ["diciembre", "enero", "febrero"],
+  "guia_asignado": "GUI-002",
+  "capacidad_max": 6,
+  "precio_clp": 890000,
+  "resumen": "Travesía de altura de cuatro días entre el volcán Villarrica y Quetrupillán. Terreno volcánico, nieve residual y refugios rústicos. Exige buen estado físico.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Ascenso al cráter del volcán Villarrica con guías de montaña (actividad sujeta a condiciones)", "lugar": "Volcán Villarrica", "sendero": "senda-crater-villarrica"},
+    {"dia": 2, "actividad": "Travesía de altura hacia refugio Quetrupillán por terreno volcánico", "lugar": "Quetrupillán", "sendero": "senda-traverse-quetrupillan"},
+    {"dia": 3, "actividad": "Caminata glacial en Quetrupillán y campamento alto", "lugar": "Quetrupillán", "sendero": "senda-traverse-quetrupillan"},
+    {"dia": 4, "actividad": "Descenso a Pucón por bosque nativo", "lugar": "Pucón", "sendero": "senda-traverse-quetrupillan"}
+  ]
+}

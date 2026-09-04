@@ -1,0 +1,20 @@
+{
+  "id": "PAQ-002",
+  "nombre": "Trekking Base Torres del Paine",
+  "region": "Magallanes",
+  "tipo_actividad": "trekking",
+  "dificultad": "intermedio",
+  "dias": 5,
+  "temporada": ["noviembre", "diciembre", "enero", "febrero", "marzo"],
+  "guia_asignado": "GUI-002",
+  "capacidad_max": 10,
+  "precio_clp": 1250000,
+  "resumen": "Cinco días de trekking en Torres del Paine culminando en el mirador Base Torres. Refugios y camping equipado, travesía del valle del Francés incluida.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Ingreso por Laguna Amarga, caminata de aproximación a Campamento Central", "lugar": "Torres del Paine", "sendero": "senda-base-torres"},
+    {"dia": 2, "actividad": "Ascenso al mirador Base Torres (4h ida y vuelta, 950m de desnivel)", "lugar": "Mirador Base Torres", "sendero": "senda-base-torres"},
+    {"dia": 3, "actividad": "Travesía valle del Francés, vista a los cuernos", "lugar": "Valle del Francés", "sendero": "senda-valle-frances"},
+    {"dia": 4, "actividad": "Caminata al lago Grey y mirador glaciar", "lugar": "Lago Grey", "sendero": "senda-lago-grey"},
+    {"dia": 5, "actividad": "Salida del parque y traslado a Puerto Natales", "lugar": "Puerto Natales", "sendero": null}
+  ]
+}

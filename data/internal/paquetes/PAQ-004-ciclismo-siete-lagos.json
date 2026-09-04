@@ -1,0 +1,19 @@
+{
+  "id": "PAQ-004",
+  "nombre": "Ciclismo de los Siete Lagos",
+  "region": "Araucanía",
+  "tipo_actividad": "ciclismo",
+  "dificultad": "intermedio",
+  "dias": 4,
+  "temporada": ["noviembre", "diciembre", "enero", "febrero", "marzo"],
+  "guia_asignado": "GUI-004",
+  "capacidad_max": 6,
+  "precio_clp": 640000,
+  "resumen": "Pedaleo en bicicleta de gravel entre Villarrica y Pucón pasando por lagos y bosques araucarios. Tramos suaves con apoyos logísticos.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Vuelta al lago Villarrica (60km, tramo plano con viento)", "lugar": "Villarrica", "sendero": null},
+    {"dia": 2, "actividad": "Villarrica a Caburgua por camino entre bosques nativos (45km)", "lugar": "Lago Caburgua", "sendero": "senda-caburgua-hueife"},
+    {"dia": 3, "actividad": "Subida al paso Huife y descenso a termas; tarde libre", "lugar": "Termas de Huife", "sendero": "senda-caburgua-hueife"},
+    {"dia": 4, "actividad": "Regreso a Pucón por la costanera, cierre", "lugar": "Pucón", "sendero": null}
+  ]
+}

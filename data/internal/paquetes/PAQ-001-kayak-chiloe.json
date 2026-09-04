@@ -1,0 +1,18 @@
+{
+  "id": "PAQ-001",
+  "nombre": "Kayak en el archipiélago de Chiloé",
+  "region": "Los Lagos",
+  "tipo_actividad": "kayak",
+  "dificultad": "principiante",
+  "dias": 3,
+  "temporada": ["octubre", "noviembre", "diciembre", "enero", "febrero", "marzo"],
+  "guia_asignado": "GUI-001",
+  "capacidad_max": 8,
+  "precio_clp": 389000,
+  "resumen": "Kayak de travesía suave entre los palafitos de Castro y las islas interiores de Chiloé, ideal para primerizos. Navegación en aguas protegidas con apoyo de lancha.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Llegada a Castro, brief de seguridad y práctica en el canal interior; visita a palafitos y mercado", "lugar": "Castro", "sendero": null},
+    {"dia": 2, "actividad": "Travesía en kayak a Isla Lemuy, almuerzo en playa, visita a iglesia patrimonial", "lugar": "Isla Lemuy", "sendero": "senda-costa-lemuy"},
+    {"dia": 3, "actividad": "Kayak al amanecer hacia Chonchi, cierre y retorno", "lugar": "Chonchi", "sendero": null}
+  ]
+}

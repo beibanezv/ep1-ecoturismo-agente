@@ -1,0 +1,17 @@
+{
+  "id": "PAQ-009",
+  "nombre": "Bici de montaña en valle de Pucón",
+  "region": "Araucanía",
+  "tipo_actividad": "ciclismo",
+  "dificultad": "principiante",
+  "dias": 2,
+  "temporada": ["septiembre", "octubre", "noviembre", "diciembre", "enero", "febrero", "marzo", "abril"],
+  "guia_asignado": "GUI-004",
+  "capacidad_max": 8,
+  "precio_clp": 220000,
+  "resumen": "Dos días de bicicleta de montaña en senderos suaves alrededor de Pucón, con cascadas, lagos y termas. Nivel bajo, ideal para iniciarse en MTB.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Circuito Ojos del Caburgua en MTB, cascadas y miradores", "lugar": "Pucón", "sendero": "senda-ojos-caburgua"},
+    {"dia": 2, "actividad": "Sendero de las Cascadas en bicicleta y tarde de termas", "lugar": "Pucón", "sendero": "senda-las-cascadas-pucon"}
+  ]
+}

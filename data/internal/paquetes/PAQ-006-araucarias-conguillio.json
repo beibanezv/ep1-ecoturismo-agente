@@ -1,0 +1,17 @@
+{
+  "id": "PAQ-006",
+  "nombre": "Trekking Bosque Milenario Araucarias",
+  "region": "Araucanía",
+  "tipo_actividad": "trekking",
+  "dificultad": "principiante",
+  "dias": 2,
+  "temporada": ["octubre", "noviembre", "diciembre", "enero", "febrero", "marzo", "abril"],
+  "guia_asignado": "GUI-004",
+  "capacidad_max": 10,
+  "precio_clp": 310000,
+  "resumen": "Dos días de caminatas suaves entre araucarias milenarias en el parque Conguillío, con laguna y volcanes en actividad de fondo. Ideal para familias.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Sendero Sierra Nevada, mirador sobre laguna y bosque milenario", "lugar": "Parque Conguillío", "sendero": "senda-sierra-nevada"},
+    {"dia": 2, "actividad": "Circuito araucarias del Volcán Llaima y laguna Verde, retorno", "lugar": "Parque Conguillío", "sendero": "senda-arucarias-llaima"}
+  ]
+}

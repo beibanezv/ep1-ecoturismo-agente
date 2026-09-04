@@ -1,0 +1,20 @@
+{
+  "fuente": "Dataset simulado de agencia (CONAF no publica API; ver README - Limitaciones)",
+  "actualizado": "2026-09-03T09:00:00-04:00",
+  "senderos": [
+    {"id": "senda-base-torres", "nombre": "Senda Base Torres", "region": "Magallanes", "estado": "cerrado", "motivo": "Bloqueo por nieve fresca en el tramo final, morrena inestable", "desde": "2026-09-01"},
+    {"id": "senda-valle-frances", "nombre": "Senda Valle del Francés", "region": "Magallanes", "estado": "precaucion", "motivo": "Río de deshielo alto en la tarde, cruzar temprano", "desde": "2026-09-02"},
+    {"id": "senda-lago-grey", "nombre": "Senda Lago Grey", "region": "Magallanes", "estado": "abierto", "motivo": null, "desde": "2026-08-20"},
+    {"id": "senda-costa-lemuy", "nombre": "Senda Costa de Lemuy", "region": "Los Lagos", "estado": "abierto", "motivo": null, "desde": "2026-08-25"},
+    {"id": "senda-costera-punihuil", "nombre": "Senda Costera Puñihuil", "region": "Los Lagos", "estado": "precaucion", "motivo": "Marea alta inunda tramo bajo entre 13:00 y 17:00", "desde": "2026-09-01"},
+    {"id": "senda-bosque-chiloe", "nombre": "Senda Bosque de Chiloé", "region": "Los Lagos", "estado": "abierto", "motivo": null, "desde": "2026-08-30"},
+    {"id": "senda-sierra-nevada", "nombre": "Senda Sierra Nevada", "region": "Araucanía", "estado": "abierto", "motivo": null, "desde": "2026-08-28"},
+    {"id": "senda-arucarias-llaima", "nombre": "Senda Araucarias del Llaima", "region": "Araucanía", "estado": "cerrado", "motivo": "Zona de explosiones menores del volcán Llaima, área restringida por SERNAGEOMIN", "desde": "2026-09-02"},
+    {"id": "senda-caburgua-hueife", "nombre": "Camino Caburgua - Paso Huife", "region": "Araucanía", "estado": "abierto", "motivo": null, "desde": "2026-08-15"},
+    {"id": "senda-crater-villarrica", "nombre": "Senda Cráter Villarrica", "region": "Araucanía", "estado": "cerrado", "motivo": "Actividad volcánica elevada, SERNAGEOMIN en amarillo, ascenso prohibido", "desde": "2026-09-01"},
+    {"id": "senda-traverse-quetrupillan", "nombre": "Travesía Quetrupillán", "region": "Araucanía", "estado": "precaucion", "motivo": "Nieve residual sobre 1.400m, requiere crampones", "desde": "2026-08-29"},
+    {"id": "senda-ojos-caburgua", "nombre": "Senda Ojos del Caburgua", "region": "Araucanía", "estado": "abierto", "motivo": null, "desde": "2026-08-10"},
+    {"id": "senda-las-cascadas-pucon", "nombre": "Sendero de las Cascadas", "region": "Araucanía", "estado": "abierto", "motivo": null, "desde": "2026-08-10"},
+    {"id": "senda-glaciar-hualpahuenu", "nombre": "Senda Glaciar Hualpahuenu", "region": "Los Lagos", "estado": "abierto", "motivo": null, "desde": "2026-08-20"}
+  ]
+}

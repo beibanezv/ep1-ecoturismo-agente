@@ -1,0 +1,17 @@
+{
+  "id": "PAQ-003",
+  "nombre": "Observación de pingüinos y aves marinas",
+  "region": "Los Lagos",
+  "tipo_actividad": "observacion_fauna",
+  "dificultad": "principiante",
+  "dias": 2,
+  "temporada": ["octubre", "noviembre", "diciembre", "enero", "febrero"],
+  "guia_asignado": "GUI-003",
+  "capacidad_max": 12,
+  "precio_clp": 245000,
+  "resumen": "Dos días de observación de fauna en Puñihuil: colonias de pingüinos de Magallanes y de Humboldt en lancha, más senderos costeros suaves de interpretación.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Navegación a islotes de Puñihuil, colonias de pingüinos; tarde de interpretación costera", "lugar": "Ancud - Puñihuil", "sendero": "senda-costera-punihuil"},
+    {"dia": 2, "actividad": "Sendero interpretativo Bosque de Chiloé y avistamiento de aves en humedal", "lugar": "Ancud", "sendero": "senda-bosque-chiloe"}
+  ]
+}

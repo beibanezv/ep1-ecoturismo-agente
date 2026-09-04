@@ -1,0 +1,20 @@
+{
+  "id": "PAQ-007",
+  "nombre": "Kayak de fjord en Pumalín",
+  "region": "Los Lagos",
+  "tipo_actividad": "kayak",
+  "dificultad": "avanzado",
+  "dias": 5,
+  "temporada": ["diciembre", "enero", "febrero"],
+  "guia_asignado": "GUI-001",
+  "capacidad_max": 6,
+  "precio_clp": 1150000,
+  "resumen": "Expedición de cinco días en kayak por el fjord Comau en Pumalín Douglas Tompkins. Campamentos remotos, vientos fuertes y navegación expuesta. Requiere experiencia previa.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Brief técnico y travesía inicial en el fjord Comau", "lugar": "Hornopirén", "sendero": null},
+    {"dia": 2, "actividad": "Navegación a caleta y camping remoto; navegación expuesta de 18km", "lugar": "Fjord Comau", "sendero": null},
+    {"dia": 3, "actividad": "Caminata glaciar y retorno al campamento base", "lugar": "Fjord Comau", "sendero": "senda-glaciar-hualpahuenu"},
+    {"dia": 4, "actividad": "Travesía de regreso con tramo de mar abierto", "lugar": "Fjord Comau", "sendero": null},
+    {"dia": 5, "actividad": "Cierre, traslado y retorno a Hornopirén", "lugar": "Hornopirén", "sendero": null}
+  ]
+}

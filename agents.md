@@ -76,7 +76,7 @@ ep1-ecoturismo-replanner/
 ## 5. Plan de fases
 
 - [x] Fase 0 — Scaffold: uv, pyproject, .env.example, verify_groq.py, git init
-- [ ] Fase 1 — Datos simulados (8-10 paquetes + 4-5 guías) + ingesta + índice Chroma
+- [x] Fase 1 — Datos simulados (8-10 paquetes + 4-5 guías) + ingesta + índice Chroma
 - [ ] Fase 2 — llm_client.py + prompts + respuesta base con citas
 - [ ] Fase 3 — Tools clima/senderos + loop razonamiento-acción + trace.jsonl
 - [ ] Fase 4 — Replanificación automática

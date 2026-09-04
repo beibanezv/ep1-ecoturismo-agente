@@ -1,0 +1,18 @@
+{
+  "id": "PAQ-005",
+  "nombre": "Expedición de avistamiento de ballenas",
+  "region": "Los Lagos",
+  "tipo_actividad": "observacion_fauna",
+  "dificultad": "intermedio",
+  "dias": 3,
+  "temporada": ["enero", "febrero", "marzo", "abril"],
+  "guia_asignado": "GUI-005",
+  "capacidad_max": 8,
+  "precio_clp": 790000,
+  "resumen": "Tres días en el mar interior de Chiloé buscando ballenas azules en el golfo de Corcovado, con salidas en lancha desde Puñihuil y charlas de biólogos.",
+  "itinerario": [
+    {"dia": 1, "actividad": "Charla de biología marina y salida de familiarización en la bahía", "lugar": "Ancud", "sendero": null},
+    {"dia": 2, "actividad": "Salida plena al golfo de Corcovado en búsqueda de ballenas azules", "lugar": "Golfo de Corcovado", "sendero": null},
+    {"dia": 3, "actividad": "Segunda salida matinal, visita a islotes de Puñihuil y retorno", "lugar": "Ancud - Puñihuil", "sendero": "senda-costera-punihuil"}
+  ]
+}
