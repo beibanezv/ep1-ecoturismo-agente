@@ -3,7 +3,7 @@
 **Proyecto:** ep1-ecoturismo-agente
 **Curso:** ISY0101 Ingeniería de Soluciones con IA — Evaluación Parcial 1 (30%)
 **GitHub:** https://github.com/beibanezv
-**Última actualización:** 2026-09-03
+**Última actualización:** 2026-09-04
 
 > Memoria técnica del proyecto. Se actualiza en cada sesión para preservar
 > decisiones, tradeoffs y avance entre entregas. Sirve de bitácora para el
@@ -82,9 +82,9 @@ ep1-ecoturismo-agente/
 - [x] Fase 1 — Datos simulados (8-10 paquetes + 4-5 guías) + ingesta + índice Chroma
 - [x] Fase 2 — llm_client.py + prompts + respuesta base con citas
 - [x] Fase 3 — Tools clima/senderos + loop razonamiento-acción + trace.jsonl
-- [ ] Fase 4 — Replanificación automática
-- [ ] Fase 5 — Evals: 12-15 casos, tests/eval_agent.py, meta ≥85% aciertos
-- [ ] Fase 6 — README completo + diagrama Mermaid + docs/informe
+- [x] Fase 4 — Replanificación automática (`tools/replanner.py` + `tools/guia_disponibilidad.py` + `SISTEMA_REPLAN`; suite 10/10)
+- [x] Fase 5 — Evals: 12 casos en `tests/eval_dataset.json`, 12/12 (100%) ≥ meta 85%
+- [x] Fase 6 — README completo + diagrama Mermaid + CLI + notebook demo
 
 ## 6. Limitaciones conocidas
 
@@ -111,3 +111,26 @@ ep1-ecoturismo-agente/
   `agent/reasoning_loop.py` (detecta e informa conflictos, no replanifica),
   citas extendidas a [T#] para herramientas. `tests/test_fase3.py`: 5/5 OK.
   Open-Meteo verificado en vivo (Magallanes 2026-09-06).
+- **2026-09-04** — Fase 4 completada: `tools/guia_disponibilidad.py` (roster
+  interno verificado como tool [T#]; nunca inventa disponibilidad) y
+  `tools/replanner.py` (reconsulta RAG con k=8, excluye el paquete
+  conflictado, evalúa temporada/senderos/clima/guía y elige el primer viable).
+  `agent/prompts.py` agrega `SISTEMA_REPLAN`; `reasoning_loop.py` integra la
+  verificación de guía como tercer tipo de conflicto y el flujo de
+  replanificación. Contrato de resultado: si replanifica, `paquete_id` es el
+  alternativo y `paquete_original_id` conserva el original; si no hay
+  alternativa viable, `paquete_id=None` con respuesta honesta; `conflicto` y
+  `detalle_conflicto` se mantienen siempre. `tests/test_fase4.py`: 5/5 OK
+  (suite total 10/10).
+- **2026-09-04** — Fase 5 completada: `tests/eval_dataset.json` con 12 casos
+  (sin conflicto, replanificación por sendero/clima/guía/temporada, casos sin
+  alternativa y verificación de citas). Expectativas escritas tras sondear el
+  comportamiento real del agente (script probe), no teóricas. Evals: 12/12
+  (100%) ≥ meta 85%, con `ClienteFalso` (reproducible y sin cuota).
+- **2026-09-04** — Fase 6 completada: `main.py` (CLI con `--fecha`, `--pasos`
+  para ver el trace de la corrida y `--falso` para ClienteFalso),
+  `notebooks/demo.ipynb` (5 casos incluyendo replanificación y replan
+  fallida), README con diagrama Mermaid del pipeline. El prototipo
+  veterinario (`../ep1-veterinaria-agente`, Fases 0-6, evals 14/14) se
+  construyó con la misma arquitectura base (D1-D8) y validó la reutilización
+  de la superficie común.
