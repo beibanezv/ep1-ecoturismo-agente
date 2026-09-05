@@ -134,3 +134,17 @@ ep1-ecoturismo-agente/
   veterinario (`../ep1-veterinaria-agente`, Fases 0-6, evals 14/14) se
   construyó con la misma arquitectura base (D1-D8) y validó la reutilización
   de la superficie común.
+
+- **2026-09-05** — Guion de demo para la presentación (probado en desarrollo).
+  Todo con `--falso` (ClienteFalso determinista, sin cuota ni API key):
+  1. `& ".venv\Scripts\python.exe" main.py "kayak suave para principiantes en Chiloe" --fecha 2026-12-08 --pasos --falso` → PAQ-001 sin conflicto.
+  2. `& ".venv\Scripts\python.exe" main.py "trekking exigente en Torres del Paine" --fecha 2026-12-15 --pasos --falso` → replanifica PAQ-002 → PAQ-009 (senda-base-torres cerrado).
+  3. `& ".venv\Scripts\python.exe" main.py "observacion de ballenas y fauna marina en Los Lagos" --fecha 2026-12-05 --pasos --falso` → replanifica PAQ-005 → PAQ-003 (fuera de temporada + guía sin agenda).
+  4. `& ".venv\Scripts\python.exe" main.py "trekking exigente en Torres del Paine" --fecha 2026-12-04 --pasos --falso` → respuesta honesta sin alternativa (paquete: None).
+  Evidencia cuantitativa: `& ".venv\Scripts\python.exe" -m pytest -q` → 10/10 y
+  `& ".venv\Scripts\python.exe" -m tests.eval_agent` → 12/12 (100%).
+  `--pasos` muestra el trace de la corrida (trazabilidad en vivo). Caso opcional
+  con LLM real: quitar `--falso` en el caso 1 (requiere GROQ_API_KEY en .env).
+  Caveat: fechas de dic 2026 quedan fuera del rango de Open-Meteo (~16 días) →
+  clima no disponible, no es conflicto (limitación documentada). Los casos del
+  prototipo veterinario están en el agents.md del repo gemelo.
