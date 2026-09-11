@@ -6,7 +6,9 @@ from pathlib import Path
 from agent.llm_client import ClienteFalso
 from agent.reasoning_loop import AgentePlanificador
 from agent.trace import Trazador
+from agent.retriever import Fragmento
 from tools.guia_disponibilidad import consultar_guia
+from tools.replanner import Replanificador
 
 
 def clima_por_region(adverso_region):
@@ -78,6 +80,27 @@ def test_sin_alternativa_viable_responde_honesto(tmp_path):
     assert r.paquete_id is None
     assert r.paquete_original_id == "PAQ-002"
     assert "senda-base-torres" in r.detalle_conflicto
+
+
+def test_sendero_desconocido_no_es_viable(tmp_path):
+    """Un paquete con un sendero sin estado conocido no debe considerarse viable."""
+    replan = Replanificador(
+        recuperador=None,
+        trazador=Trazador(tmp_path / "trace.jsonl"),
+        proveedor_clima=clima_bueno,
+        cargar_paquete=lambda pid: None,
+    )
+    paquete = {
+        "id": "PAQ-XUS",
+        "region": "Araucanía",
+        "temporada": ["diciembre"],
+        "guia_asignado": "GUI-004",
+        "itinerario": [{"dia": 1, "sendero": "senda-inexistente"}],
+    }
+    fragmento = Fragmento(id="PAQ-XUS::c0", texto="x", tipo="paquete", fuente="PAQ-XUS")
+    viable, _, conflictos = replan._evaluar(paquete, fragmento, fecha=None)
+    assert viable is False
+    assert any("sendero sin estado conocido" in c for c in conflictos)
 
 
 def test_trace_registra_pasos_replan(tmp_path):

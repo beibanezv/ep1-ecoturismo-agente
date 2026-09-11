@@ -10,6 +10,7 @@ Criterios de viabilidad de un paquete candidato (todos duros, verificables):
 El primer candidato viable por ranking semantico gana; cada verificacion
 queda en trace.jsonl y se entrega como (fuente, texto) para citar como [T#].
 """
+import datetime
 from dataclasses import dataclass, field
 
 from agent.retriever import Fragmento, Recuperador
@@ -24,6 +25,16 @@ MESES = [
     "enero", "febrero", "marzo", "abril", "mayo", "junio",
     "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
 ]
+
+
+def mes_de_fecha(fecha: str) -> str:
+    """Mes en texto de una fecha ISO; error claro si el formato es inválido."""
+    try:
+        return MESES[datetime.date.fromisoformat(fecha).month - 1]
+    except ValueError as e:
+        raise ValueError(
+            f"fecha invalida: '{fecha}'. Usa formato ISO YYYY-MM-DD."
+        ) from e
 
 
 @dataclass
@@ -57,7 +68,7 @@ class Replanificador:
         conflictos: list[str] = []
 
         if fecha:
-            mes = MESES[int(fecha[5:7]) - 1]
+            mes = mes_de_fecha(fecha)
             if mes not in paquete["temporada"]:
                 conflictos.append(f"fuera de temporada ({mes} no esta en {', '.join(paquete['temporada'])})")
                 return False, herramientas, conflictos
@@ -65,6 +76,10 @@ class Replanificador:
         for sid in sorted({d["sendero"] for d in paquete["itinerario"] if d.get("sendero")}):
             est = estado_sendero(sid)
             if est is None:
+                # Sendero sin estado conocido: no se puede validar -> no viable.
+                self.trazador.registrar("herramienta", herramienta="estado_sendero", entrada=sid, salida="desconocido", contexto="replan")
+                herramientas.append((FUENTE_SENDEROS, f"[{paquete['id']}] {sid}: estado desconocido"))
+                conflictos.append(f"sendero sin estado conocido: {sid}")
                 continue
             self.trazador.registrar("herramienta", herramienta="estado_sendero", entrada=sid, salida=est["estado"], contexto="replan")
             herramientas.append((FUENTE_SENDEROS, f"[{paquete['id']}] {est['sendero_id']}: {est['estado']}"))

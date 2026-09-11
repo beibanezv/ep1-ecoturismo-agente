@@ -12,12 +12,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agent.llm_client import ClienteGroq, ClienteLLM
+from agent.observabilidad import traceable
 from agent.prompts import SISTEMA_BASE, SISTEMA_REPLAN, armar_usuario
 from agent.retriever import Fragmento, Recuperador
 from agent.trace import Trazador
 from tools.guia_disponibilidad import NOMBRE_FUENTE as FUENTE_GUIAS
 from tools.guia_disponibilidad import consultar_guia, describir_disponibilidad
-from tools.replanner import MESES, Replanificador
+from tools.replanner import Replanificador, mes_de_fecha
 from tools.trail_status import NOMBRE_FUENTE as FUENTE_SENDEROS
 from tools.trail_status import describir_estado, estado_sendero
 from tools.weather import NOMBRE_FUENTE as FUENTE_CLIMA
@@ -109,8 +110,11 @@ class AgentePlanificador:
             paquete_original_id=paquete_original_id,
         )
 
+    @traceable("planificar")
     def planificar(self, consulta: str, fecha: str | None = None) -> PlanRespuesta:
         self.trazador.registrar("consulta", texto=consulta, fecha=fecha)
+        if fecha:
+            mes_de_fecha(fecha)  # valida formato ISO; lanza ValueError si no lo es
 
         fragmentos = self.recuperador.buscar(consulta, k=self.k, filtro={"tipo": "paquete"})
         self.trazador.registrar(
@@ -132,9 +136,12 @@ class AgentePlanificador:
             for sid in senderos:
                 est = estado_sendero(sid)
                 if est is None:
+                    # Sin estado conocido no se puede validar la seguridad del plan.
                     self.trazador.registrar(
                         "herramienta", herramienta="estado_sendero", entrada=sid, salida="desconocido"
                     )
+                    herramientas.append((FUENTE_SENDEROS, f"Senda {sid}: estado desconocido."))
+                    conflictos.append(f"sendero sin estado conocido: {sid}")
                     continue
                 self.trazador.registrar(
                     "herramienta", herramienta="estado_sendero", entrada=sid, salida=est["estado"]
@@ -144,7 +151,7 @@ class AgentePlanificador:
                     conflictos.append(f"sendero cerrado: {sid} ({est['motivo']})")
 
         if paquete and fecha:
-            mes = MESES[int(fecha[5:7]) - 1]
+            mes = mes_de_fecha(fecha)
             if mes not in paquete["temporada"]:
                 conflictos.append(f"fuera de temporada: {mes} no esta en {', '.join(paquete['temporada'])}")
 

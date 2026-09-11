@@ -1,0 +1,133 @@
+{
+  "agregado": {
+    "n_casos": 12,
+    "context_precision": 0.28,
+    "context_recall": 1.0,
+    "faithfulness": 1.0,
+    "answer_relevancy": 1.0,
+    "precision_at_1": 1.0,
+    "mrr": 1.0
+  },
+  "casos": [
+    {
+      "id": "E01",
+      "n_recuperados": 4,
+      "precision": 0.25,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E02",
+      "n_recuperados": 4,
+      "precision": 0.25,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E03",
+      "n_recuperados": 4,
+      "precision": 0.25,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E04",
+      "n_recuperados": 6,
+      "precision": 0.33,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E05",
+      "n_recuperados": 7,
+      "precision": 0.29,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E06",
+      "n_recuperados": 5,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E07",
+      "n_recuperados": 6,
+      "precision": 0.33,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E08",
+      "n_recuperados": 5,
+      "precision": 0.2,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E09",
+      "n_recuperados": 4,
+      "precision": 0.25,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E10",
+      "n_recuperados": 6,
+      "precision": 0.17,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E11",
+      "n_recuperados": 3,
+      "precision": 0.33,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    },
+    {
+      "id": "E12",
+      "n_recuperados": 3,
+      "precision": 0.33,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "precision_at_1": 1.0,
+      "mrr": 1.0,
+      "veredicto_ok": true
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 **Proyecto:** ep1-ecoturismo-agente
 **Curso:** ISY0101 Ingeniería de Soluciones con IA — Evaluación Parcial 1 (30%)
 **GitHub:** https://github.com/beibanezv
-**Última actualización:** 2026-09-04
+**Última actualización:** 2026-09-10
 
 > Memoria técnica del proyecto. Se actualiza en cada sesión para preservar
 > decisiones, tradeoffs y avance entre entregas. Sirve de bitácora para el
@@ -33,7 +33,8 @@
 | D6 | Repos | Dos repos independientes | Superficie común ~100 líneas (`llm_client` + logger); entrega académica es por repo | Paquete `shared/`, monorepo |
 | D7 | Nombres | `ep1-ecoturismo-agente` | Distintivo en GitHub beibanezv (decenas de archivos similares); describe la función (replanificador) | `EP1-Turismo` |
 | D8 | Orquestación | Loop razonamiento-acción propio (sin LangGraph/CrewAI) | Control total del logging de trazabilidad (requisito del encargo); la pauta pide mostrar el loop explícito | LangGraph (visto en curso; capa extra innecesaria para 1 agente) |
-| D9 | Interfaz demo | CLI (`main.py`) + notebook `notebooks/demo.ipynb` | La pauta no exige UI; Streamlit solo aparece en RA1 como app de demostración de las IL (IL1.3/IL1.4), no como requisito. Menos trabajo y menos cuota | Mini-UI Streamlit (estilo proyecto Oxford) |
+| D9 | Interfaz demo | CLI + notebook + Streamlit `app.py` (solo demo) | La pauta no exige UI; Streamlit es formulario delgado sobre `planificar()` con los 2 casos del guion (PAQ-001 sin conflicto, PAQ-002→PAQ-009), modo `--falso` por defecto | Solo CLI |
+| D10 | LangChain / LangSmith | `ClienteLangChain` (ChatGroq vía langchain-groq) por defecto + `agent/observabilidad.py` activo | Mismo contrato `completar()`; `planificar()` con `@traceable`; tracing al proyecto `ep1-ecoturismo` si hay `LANGSMITH_API_KEY` en `.env`, si no es no-op; tests/evals con tracing apagado | LangGraph / tracing obligatorio |
 
 Convencion de commits: mensajes simples y en espanol durante todo el semestre.
 
@@ -56,22 +57,26 @@ tipo de actividad, nivel de experiencia):
 ```
 ep1-ecoturismo-agente/
 ├── data/
-│   ├── internal/paquetes/     (8-10 itinerarios .json)
-│   ├── internal/guias_roster.json (4-5 guías con disponibilidad)
-│   └── external/trail_status.json (simulada, limitación documentada)
-├── ingestion/ingest.py        carga → chunk → embed → Chroma
+│   ├── internal/paquetes/     (9 itinerarios .json: PAQ-001..009)
+│   ├── internal/guias_roster.json (5 guías GUI-001..005 con disponibilidad)
+│   └── external/trail_status.json (14 senderos, simulada, limitación documentada)
+├── ingestion/ingest.py        carga → chunk → embed → Chroma (24 docs)
 ├── agent/
-│   ├── llm_client.py          interfaz intercambiable, Groq default
+│   ├── llm_client.py          ClienteGroq + ClienteFalso + ClienteLangChain
 │   ├── reasoning_loop.py      loop razonamiento-acción (máx N pasos)
 │   ├── prompts.py
+│   ├── retriever.py           lee EMBEDDING_MODEL del .env, error amable si falta colección
+│   ├── observabilidad.py      init_langsmith opt-in + decorador traceable no-op
 │   └── trace.py               log JSONL de trazabilidad
 ├── tools/
 │   ├── weather.py             Open-Meteo (real, sin key)
 │   ├── trail_status.py        lee trail_status.json como fuente externa
+│   ├── guia_disponibilidad.py roster interno como tool [T#]
 │   └── replanner.py           elige alternativa ante conflicto
 ├── main.py                    CLI: pedido cliente → itinerario justificado
+├── app.py                     Streamlit demo (2 casos del guion, modo falso por defecto)
 ├── tests/
-│   ├── eval_dataset.json      12-15 consultas con resultado esperado
+│   ├── eval_dataset.json      12 consultas con resultado esperado
 │   └── eval_agent.py          corre evals y reporta % de aciertos
 └── docs/                      informe y diagramas (Fase 6)
 ```
@@ -82,7 +87,7 @@ ep1-ecoturismo-agente/
 - [x] Fase 1 — Datos simulados (8-10 paquetes + 4-5 guías) + ingesta + índice Chroma
 - [x] Fase 2 — llm_client.py + prompts + respuesta base con citas
 - [x] Fase 3 — Tools clima/senderos + loop razonamiento-acción + trace.jsonl
-- [x] Fase 4 — Replanificación automática (`tools/replanner.py` + `tools/guia_disponibilidad.py` + `SISTEMA_REPLAN`; suite 10/10)
+- [x] Fase 4 — Replanificación automática (`tools/replanner.py` + `tools/guia_disponibilidad.py` + `SISTEMA_REPLAN`; suite 13/13: 10/10 al cerrar la fase, +3 tests en la revisión)
 - [x] Fase 5 — Evals: 12 casos en `tests/eval_dataset.json`, 12/12 (100%) ≥ meta 85%
 - [x] Fase 6 — README completo + diagrama Mermaid + CLI + notebook demo
 
@@ -103,7 +108,8 @@ ep1-ecoturismo-agente/
   ClienteFalso determinista para dev/tests sin cuota), `agent/prompts.py`
   (regla de citas [F#] + negativa honesta), `agent/retriever.py`,
   `agent/agent.py`. Flujo probado end-to-end con ClienteFalso. Decisión D9:
-  demo será CLI + notebook (Streamlit descartado, ver tabla).
+  demo será CLI + notebook (Streamlit se agrega después como espejo de
+  demo, ver D9 y la entrada del 2026-09-10).
 - **2026-09-04** — Fase 3 completada: `agent/trace.py` (JSONL por paso),
   `tools/trail_status.py` (fuente simulada), `tools/weather.py` (Open-Meteo
   real; fuera de rango devuelve disponible=False sin inventar; umbrales de
@@ -148,3 +154,24 @@ ep1-ecoturismo-agente/
   Caveat: fechas de dic 2026 quedan fuera del rango de Open-Meteo (~16 días) →
   clima no disponible, no es conflicto (limitación documentada). Los casos del
   prototipo veterinario están en el agents.md del repo gemelo.
+- **2026-09-10** — Corrección pre-entrega: `retriever.py` lee
+  `EMBEDDING_MODEL` del `.env` (antes hardcodeado) con error amable que pide
+  re-correr ingesta; Streamlit `app.py` agregado como espejo simple del
+  veterinario (2 casos del guion, D9 actualizada); `agent/observabilidad.py`
+  (LangSmith opt-in, no-op sin key) + `ClienteLangChain` alternativo en
+  `llm_client.py` (D10). Re-verificado: pytest 10/10, evals 12/12.
+- **2026-09-10 (2)** — Revisión externa + fixes: `tools/weather.py` traduce el
+  HTTP 400 de Open-Meteo (fecha fuera de rango) a un motivo claro en vez de
+  exponer el error crudo; `tools/replanner.mes_de_fecha` valida el formato ISO
+  (antes `int(fecha[5:7])` lanzaba excepción sin captura) y `main.py` la
+  reporta con código de salida 2; un sendero sin estado conocido ya no se
+  trata como viable (se marca conflicto en el loop y en el replanificador);
+  `tests/metricas_rag.py` agrega Precision@1 y MRR y explicita que
+  Faithfulness/Answer Relevancy son circulares. Tests nuevos: 13/13.
+  Evals 12/12.
+- **2026-09-11** — Cableado LangSmith: `ClienteLangChain` por defecto en
+  `main.py`/`app.py` (`--falso` y `--groq-directo` como escapes),
+  `@traceable("planificar")` en el loop, `init_langsmith()` al inicio;
+  tracing apagado en tests/evals (conftest + scripts). Primera corrida real
+  trazada al proyecto `ep1-ecoturismo`. Tabla 4 + Figura 2 del informe con
+  Precision@1 y MRR (1,00/1,00). Re-verificado: pytest 13/13, evals 12/12.

@@ -37,6 +37,11 @@ def pronostico(region: str, fecha_iso: str, obtener=requests.get) -> dict:
         r.raise_for_status()
         diario = r.json().get("daily", {})
     except Exception as e:
+        # Open-Meteo responde HTTP 400 cuando la fecha cae fuera del rango;
+        # se traduce a un motivo claro en vez de exponer el error crudo.
+        status = getattr(getattr(e, "response", None), "status_code", None)
+        if status == 400:
+            return {**base, "motivo": "Fecha fuera del rango de pronostico (Open-Meteo cubre ~16 dias hacia adelante)"}
         return {**base, "motivo": f"Error consultando Open-Meteo: {e}"}
     if not diario or not diario.get("time"):
         return {**base, "motivo": "Fecha fuera del rango de pronostico (Open-Meteo cubre ~16 dias hacia adelante)"}

@@ -6,14 +6,16 @@ Uso:
     python main.py "kayak en Chiloe" --fecha 2026-12-08 --falso
 
 Con --falso usa ClienteFalso (determinista, sin cuota Groq) para probar el
-pipeline completo; sin esa bandera usa ClienteGroq (openai/gpt-oss-120b).
+pipeline completo; por defecto usa ClienteLangChain (ChatGroq via LangChain,
+openai/gpt-oss-120b) con tracing LangSmith si hay LANGSMITH_API_KEY en .env.
 """
 import argparse
 import json
 import sys
 from pathlib import Path
 
-from agent.llm_client import ClienteFalso, ClienteGroq
+from agent.llm_client import ClienteFalso, ClienteGroq, ClienteLangChain
+from agent.observabilidad import init_langsmith
 from agent.reasoning_loop import AgentePlanificador
 
 RAIZ = Path(__file__).resolve().parent
@@ -43,9 +45,16 @@ def main() -> int:
     parser.add_argument("--fecha", default=None, help="fecha del viaje en formato ISO (ej: 2026-12-08)")
     parser.add_argument("--pasos", action="store_true", help="mostrar cada paso del loop (trace.jsonl)")
     parser.add_argument("--falso", action="store_true", help="usar ClienteFalso determinista (sin cuota Groq)")
+    parser.add_argument("--groq-directo", action="store_true", help="usar ClienteGroq (SDK crudo) en vez de ClienteLangChain")
     args = parser.parse_args()
 
-    llm = ClienteFalso() if args.falso else ClienteGroq()
+    init_langsmith()
+    if args.falso:
+        llm = ClienteFalso()
+    elif args.groq_directo:
+        llm = ClienteGroq()
+    else:
+        llm = ClienteLangChain()
     agente = AgentePlanificador(llm=llm)
 
     archivo_trace = RAIZ / "logs" / "trace.jsonl"
@@ -56,7 +65,11 @@ def main() -> int:
         print(f"Fecha del viaje: {args.fecha}")
     print(f"LLM: {type(llm).__name__}\n")
 
-    r = agente.planificar(args.consulta, fecha=args.fecha)
+    try:
+        r = agente.planificar(args.consulta, fecha=args.fecha)
+    except ValueError as e:
+        print(f"Error: {e}")
+        return 2
 
     print("--- RESPUESTA ---")
     print(r.texto)

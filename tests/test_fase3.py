@@ -5,7 +5,7 @@ from pathlib import Path
 from agent.llm_client import ClienteFalso
 from agent.reasoning_loop import AgentePlanificador
 from agent.trace import Trazador
-from tools.weather import es_conflicto_climatico
+from tools.weather import es_conflicto_climatico, pronostico
 
 
 def planificar_en_tmp(tmp_path, consulta, fecha=None, clima=None):
@@ -63,6 +63,28 @@ def test_trace_registra_todos_los_pasos(tmp_path):
     assert "herramienta" in tipos
     pasos = [json.loads(l)["paso"] for l in lineas]
     assert pasos == list(range(1, len(lineas) + 1))
+
+
+def test_fecha_invalida_lanza_error_claro(tmp_path):
+    import pytest
+
+    with pytest.raises(ValueError, match="formato ISO"):
+        planificar_en_tmp(tmp_path, "kayak en Chiloe", fecha="2026-13-01")
+
+
+def test_clima_fuera_de_rango_mensaje_amable():
+    class _Resp:
+        status_code = 400
+
+    class _ErrorHTTP(Exception):
+        response = _Resp()
+
+    def obtener(*args, **kwargs):
+        raise _ErrorHTTP("400 Client Error")
+
+    p = pronostico("Magallanes", "2026-12-08", obtener=obtener)
+    assert p["disponible"] is False
+    assert "fuera del rango" in p["motivo"]
 
 
 def test_umbrales_climaticos():
