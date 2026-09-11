@@ -175,3 +175,5 @@ ep1-ecoturismo-agente/
   tracing apagado en tests/evals (conftest + scripts). Primera corrida real
   trazada al proyecto `ep1-ecoturismo`. Tabla 4 + Figura 2 del informe con
   Precision@1 y MRR (1,00/1,00). Re-verificado: pytest 13/13, evals 12/12.
+
+- **2026-09-11 (2)** — Puerta fuera-de-dominio (D11): Fragmento.score con distancias de Chroma; si el top-1 > 0,55 se redirige al ambito sin quemar tools ni LLM (evento fuera_de_dominio en trace). Calibrado: 12 validas <= 0,38, 6 ajenas >= 0,72. Regla 7 de respaldo en el prompt. main.py con stdout UTF-8 (Windows). Tests nuevos (test_dominio.py): 16/16. Evals 12/12.

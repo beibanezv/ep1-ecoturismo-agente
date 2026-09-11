@@ -8,7 +8,7 @@ senderos o la disponibilidad de guías invalidan el plan, entregando el
 itinerario final con la fuente que respalda cada decisión. Si ninguna
 alternativa es viable, responde de forma honesta sin forzar un paquete.
 
-> **Estado:** Fases 0–6 completas. Suite de tests 13/13, evals 12/12 casos
+> **Estado:** Fases 0–6 completas. Suite de tests 16/16, evals 12/12 casos
 > (100%, meta ≥85%). Decisiones técnicas y bitácora en
 > [`agents.md`](agents.md).
 

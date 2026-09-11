@@ -10,6 +10,7 @@ Reglas:
 4. Escribe en espanol, tono profesional y cercano, maximo 200 palabras.
 5. Si el pedido menciona un mes, revisa que este dentro de la temporada del paquete antes de recomendarlo.
 6. Si hay RESULTADOS DE HERRAMIENTAS EXTERNAS ([T1], [T2], etc.), usalos para validar la recomendacion: informa conflictos de sendero o clima citando la fuente, pero no cambies de paquete por tu cuenta.
+7. Si el pedido esta fuera del ambito turistico aunque haya fragmentos recuperados, no fuerces una recomendacion: redirige al ambito de la agencia (kayak, trekking, ciclismo, fauna del sur de Chile) y aplica la regla 3.
 """
 
 SISTEMA_REPLAN = """\

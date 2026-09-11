@@ -28,6 +28,20 @@ RAIZ = Path(__file__).resolve().parents[1]
 DIR_PAQUETES = RAIZ / "data" / "internal" / "paquetes"
 REGEX_CITAS = re.compile(r"\[(F|T)(\d+)\]")
 
+# Puerta fuera-de-dominio (D11): si ni el mejor fragmento se parece a la
+# consulta, no se queman tools ni LLM; se redirige al ambito de la agencia.
+# Calibrado 2026-09-11: 12 consultas validas con top-1 <= 0.38, 6 fuera de
+# dominio con top-1 >= 0.72. Umbral 0.55 deja margen amplio a ambos lados.
+UMBRAL_FUERA_DE_DOMINIO = 0.55
+
+TEXTO_FUERA_DE_DOMINIO = (
+    "Soy el asistente de itinerarios de nuestra agencia boutique de "
+    "ecoturismo en el sur de Chile y solo puedo ayudar con viajes: kayak, "
+    "trekking, ciclismo, observacion de fauna y actividades afines. "
+    "Por ejemplo: 'kayak suave para principiantes en Chiloe' o 'trekking "
+    "exigente en Torres del Paine'. Reformula tu pedido dentro de ese ambito."
+)
+
 
 @dataclass
 class PlanRespuesta:
@@ -122,6 +136,20 @@ class AgentePlanificador:
             paquete_ids=[f.fuente for f in fragmentos],
             n_fragmentos=len(fragmentos),
         )
+
+        # Puerta fuera-de-dominio (D11): si nada pertinente a la vista, redirigir.
+        mejor = fragmentos[0].score if fragmentos else None
+        if mejor is None or mejor > UMBRAL_FUERA_DE_DOMINIO:
+            self.trazador.registrar(
+                "fuera_de_dominio", consulta=consulta, score_top1=mejor
+            )
+            return PlanRespuesta(
+                texto=TEXTO_FUERA_DE_DOMINIO,
+                paquete_id=None,
+                conflicto=False,
+                detalle_conflicto="fuera_de_dominio",
+                archivo_trace=str(self.trazador.archivo),
+            )
 
         paquete = None
         paquete_id = fragmentos[0].fuente if fragmentos else None
