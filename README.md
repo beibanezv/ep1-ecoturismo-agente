@@ -1,129 +1,77 @@
-# EP1 — Agente Replanificador de Itinerarios de Ecoturismo
+# Agente de Itinerarios — Ecoturismo Sur de Chile
 
-**ISY0101 · Ingeniería de Soluciones con IA · Evaluación Parcial 1 (30%)**
+**ISY0101 · Ingeniería de Soluciones con IA · Evaluación Parcial 1**
 
-Agente LLM + RAG que genera itinerarios de ecoturismo personalizados (sur de
-Chile) y los **replanifica automáticamente** cuando el clima, el estado de los
-senderos o la disponibilidad de guías invalidan el plan, entregando el
-itinerario final con la fuente que respalda cada decisión. Si ninguna
-alternativa es viable, responde de forma honesta sin forzar un paquete.
+Programa que arma itinerarios de ecoturismo personalizados (sur de Chile) y
+los **replanifica automáticamente** cuando algo invalida el plan: sendero
+cerrado, mal clima o guía no disponible. Entrega el itinerario final indicando
+la fuente que respalda cada decisión. Si ninguna alternativa sirve, lo dice
+honestamente sin forzar un paquete.
 
-> **Estado:** Fases 0–6 completas. Suite de tests 16/16, evals 12/12 casos
-> (100%, meta ≥85%). Decisiones técnicas y bitácora en
-> [`agents.md`](agents.md).
+## Cómo funciona
 
-## Pipeline (loop razonamiento-acción)
+1. Busca el paquete que mejor calza con lo pedido (búsqueda semántica sobre
+   base local ChromaDB).
+2. Verifica el estado de los senderos, el clima (Open-Meteo, sin API key) y la
+   disponibilidad del guía.
+3. Si hay conflicto, busca otro paquete viable y explica el cambio.
+4. Responde con el itinerario final y las citas de cada fuente.
+5. Todo queda registrado en `logs/trace.jsonl` para trazabilidad.
 
-```mermaid
-flowchart TD
-    A[Pedido del cliente<br/>actividad + fecha] --> B[Recuperador RAG<br/>paquete top-1]
-    B --> C[Verificación de senderos<br/>trail_status.json]
-    C --> D{¿Conflicto?<br/>sendero cerrado}
-    D -- no --> E[Verificación clima<br/>Open-Meteo]
-    D -- sí --> H
-    E --> F{¿Conflicto climático?}
-    F -- sí --> H
-    F -- "no / fecha fuera de rango" --> G[Verificación guía<br/>roster de disponibilidad]
-    G --> I{¿Guía disponible?}
-    I -- no --> H[Replanificador<br/>reconsulta + evalúa candidatos]
-    I -- sí --> J[LLM + SISTEMA_BASE<br/>itinerario con citas F#/T#]
-    H --> K{¿Alternativa viable?}
-    K -- sí --> L[LLM + SISTEMA_REPLAN<br/>explica cambio + citas]
-    K -- no --> M[Respuesta honesta<br/>sin alternativa]
-    J --> N[Plan final<br/>+ trace.jsonl]
-    L --> N
-    M --> N
-```
-
-Cada paso queda registrado en `logs/trace.jsonl` (JSONL con paso, tipo de
-evento y hora UTC): qué recuperó, qué tool llamó, por qué replanificó y qué
-fuente respalda cada decisión.
+Si la consulta no tiene relación con turismo, el programa lo indica y no arma
+itinerario.
 
 ## Datos
 
-| Fuente | Origen | Contenido |
-|---|---|---|
-| Interna (RAG) | `data/internal/paquetes/` | 9 paquetes PAQ-001..009: región, actividad, dificultad, temporada, guía, itinerario con senderos |
-| Interna | `data/internal/guias_roster.json` | 5 guías GUI-001..005 con fechas de disponibilidad (ISO) |
-| Externa (tool) | `data/external/trail_status.json` | 14 senderos: abierta / precaución / cerrada (simulada, limitación documentada) |
-| Externa (tool) | Open-Meteo | Clima real sin API key; fuera de rango (~16 días) devuelve disponible=False sin inventar |
+- `data/internal/paquetes/`: 9 paquetes (región, actividad, dificultad,
+  temporada, guía, itinerario con senderos).
+- `data/internal/guias_roster.json`: 5 guías con fechas de disponibilidad.
+- `data/external/trail_status.json`: estado de 14 senderos (dato simulado,
+  a modo de fuente externa).
 
-Umbrales de conflicto climático: lluvia ≥10 mm, viento ≥50 km/h, mínima ≤-2 °C.
+## Cómo ejecutarlo
 
-## Cómo correr
+Requisitos: Python 3.13, [uv](https://docs.astral.sh/uv/) y una API key
+gratuita de [Groq](https://console.groq.com).
 
 ```bash
 uv sync
-cp .env.example .env   # pegar GROQ_API_KEY (gratis) de https://console.groq.com
+cp .env.example .env   # pegar la GROQ_API_KEY dentro del .env
 
-# 1. Ingesta a ChromaDB (24 documentos, verificación semántica incluida)
+# 1. Cargar los datos a la base local
 uv run python -m ingestion.ingest
 
-# 2. CLI con el LLM real (LangChain/ChatGroq por defecto, con tracing LangSmith)
+# 2. Pedir un itinerario (usa el modelo de Groq)
 uv run python main.py "kayak suave para principiantes en Chiloe" \
-    --fecha 2026-12-08 --pasos
-# variante SDK crudo: agregar --groq-directo
+    --fecha 2026-12-08
 
-# 3. CLI determinista (ClienteFalso, sin API key) para demo/CI
+# 3. Modo demo (respuestas fijas, sin gastar API)
 uv run python main.py "trekking exigente en Torres del Paine" \
-    --fecha 2026-12-15 --pasos --falso
+    --fecha 2026-12-15 --falso
 
-# 4. Tests y evals
+# 4. Correr las pruebas
 uv run python -m pytest -q
 uv run python -m tests.eval_agent
 ```
 
-Notebook de demostración con 5 casos (sin conflicto, replanificación por
-temporada/guía, clima tormenta con replan fallida, fecha sin guías, trace):
-`notebooks/demo.ipynb`.
-
-Interfaz web básica (Streamlit, solo para demo/presentación):
+Interfaz web simple para la demostración:
 
 ```bash
 uv run streamlit run app.py
-# Marca "Modo demo determinista" para no usar API key; incluye los 2 casos
-# del guion (PAQ-001 sin conflicto y PAQ-002 → PAQ-009) como botones.
 ```
 
-## Observabilidad (LangChain / LangSmith, activo)
+Cuaderno con ejemplos paso a paso: `notebooks/demo.ipynb`.
 
-- `agent/llm_client.py` incluye `ClienteLangChain` (ChatGroq vía
-  `langchain-groq`) con el mismo contrato `completar()`; el CLI y la UI
-  lo usan por defecto (`--falso` = ClienteFalso, `--groq-directo` = SDK crudo).
-- `agent/observabilidad.py` activa LangSmith si `.env` tiene
-  `LANGSMITH_API_KEY` (proyecto `ep1-ecoturismo`, ver en
-  https://smith.langchain.com/); sin key es no-op. Tests/evals llevan
-  tracing apagado (conftest + scripts) para no contaminar el proyecto.
+## Pruebas
 
-## Replanificación (Fase 4)
+- 16 pruebas automatizadas (`tests/`), todas pasando.
+- 12 casos de evaluación (`tests/eval_dataset.json`): sin conflicto,
+  replanificación por sendero/clima/guía/temporada, casos sin alternativa y
+  citas. Resultado: 12/12.
 
-Ante un conflicto (sendero cerrado, clima adverso, guía sin agenda, fuera de
-temporada) el `Replanificador` (`tools/replanner.py`):
+## Notas
 
-1. Reconsulta el RAG con k=8 y excluye el paquete conflictado.
-2. Evalúa cada candidato: temporada vigente, senderos abiertos, clima
-   aceptable y guía disponible — cada verificación queda en trace.
-3. Elige el primer viable y reconstruye el contexto; el LLM responde con
-   `SISTEMA_REPLAN` (explica el cambio y cita las fuentes).
-4. Si ninguno es viable, entrega una respuesta honesta sin alternativa
-   (`replanificacion_fallida` en trace).
-
-## Evals (Fase 5)
-
-`tests/eval_dataset.json` con 12 casos: sin conflicto, replanificación por
-sendero cerrado / clima / guía / temporada, casos sin alternativa viable y
-verificación de citas. Corre con `ClienteFalso` (reproducible, sin cuota):
-
-```
-Evals: 12/12 casos OK (100%) | meta >= 85%
-```
-
-## Limitaciones
-
-- Estado de senderos: CONAF no ofrece API pública → `trail_status.json` se
-  consulta como fuente externa simulada.
-- Open-Meteo no cubre fechas a más de ~16 días: para fechas futuras lejanas el
-  clima no se evalúa (no es conflicto) y la decisión queda respaldada por las
-  demás fuentes.
-- El roster de guías se indexa (`tipo=guia`) para dejar la fuente en Chroma, pero la recuperación del agente siempre filtra `tipo=paquete`: la disponibilidad se consulta como herramienta, no vía RAG.
-- Cuota Groq (200k tokens/día): usar `GROQ_MODEL_FAST` (20b) en dev y evals.
+- El estado de senderos es simulado (no existe API pública) y el clima solo
+  cubre fechas cercanas (~16 días); para fechas lejanas la decisión se apoya
+  en las demás fuentes.
+- Informe del proyecto en `docs/EP1_ISY0101_Informe.docx`.
